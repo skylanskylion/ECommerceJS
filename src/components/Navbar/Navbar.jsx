@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Badge, MenuItem, Menu, Typography } from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Badge, Button, MenuItem, Menu, Typography } from '@material-ui/core';
 import { ShoppingCart } from '@material-ui/icons';
 import { Link, useLocation } from 'react-router-dom';
 
 import logo from '../../assets/commerce.png';
 import useStyles from './styles';
 
-const PrimarySearchAppBar = ({ totalItems }) => {
+const PrimarySearchAppBar = ({ totalItems, isEditingInvMethod, isEditing }) => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const classes = useStyles();
   const location = useLocation();
@@ -32,11 +32,27 @@ const PrimarySearchAppBar = ({ totalItems }) => {
 
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar} color="inherit">
+      <AppBar position="fixed" className={classes.appBar} color="inherit"  style={{backgroundColor: '#7383C8'}}>
         <Toolbar>
           <Typography component={Link} to="/" variant="h6" className={classes.title} color="inherit">
-            <img src={logo} alt="commerce.js" height="25px" className={classes.image} /> Commerce.js
+            <img src={logo} alt="commerce.js" height="25px" className={classes.image} /> Buyer's Paradise
           </Typography>
+          <Button 
+            variant='filled' 
+            onClick={isEditingInvMethod}
+            style={{marginRight: 10, backgroundColor: '#F2CC39'}}
+          >
+            {
+              isEditing ? 'Cancel' : 'Edit Inventory'
+            }
+          </Button>
+          <Button 
+            variant='filled' 
+            onClick={() => window.open('https://dashboard.chec.io/products/add', '_self')}
+            style={{marginRight: 10, backgroundColor: '#F2CC39'}}
+          >
+            Add Item
+          </Button>
           <div className={classes.grow} />
           {location.pathname === '/' && (
           <div className={classes.button}>

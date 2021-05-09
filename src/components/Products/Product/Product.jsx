@@ -1,16 +1,33 @@
-import React from 'react';
-import { Card, CardMedia, CardContent, CardActions, Typography, IconButton } from '@material-ui/core';
-import { AddShoppingCart } from '@material-ui/icons';
+import React, {useState} from 'react';
+import { Card, CardMedia, CardContent, CardActions, Button, Typography, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { AddShoppingCart, Delete, Edit } from '@material-ui/icons';
+import axios from 'axios';
 
 import useStyles from './styles';
 
-const Product = ({ product, onAddToCart }) => {
+const Product = ({ product, onAddToCart, isEditing }) => {
   const classes = useStyles();
-
+  const [visible, setVisible] = useState(false);
   const handleAddToCart = () => onAddToCart(product.id, 1);
 
+  const handleClose = () => {
+    setVisible(false);
+  };
+
+  const handleDelete = (id) => {
+    axios.delete(`https://api.chec.io/v1/products/${id}`, {
+      headers: {
+        "X-Authorization": `sk_test_26130e814b678a4bcea02925f0c19659e446513f90190`,
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      }
+    })
+    .then((res) => window.location.reload())
+    .catch(err => console.log(err));
+  };
+
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} style={{backgroundColor: '#1BA0F2'}}>
       <CardMedia className={classes.media} image={product.media.source} title={product.name} />
       <CardContent>
         <div className={classes.cardContent}>
@@ -24,9 +41,41 @@ const Product = ({ product, onAddToCart }) => {
         <Typography dangerouslySetInnerHTML={{ __html: product.description }} variant="body2" color="textSecondary" component="p" />
       </CardContent>
       <CardActions disableSpacing className={classes.cardActions}>
-        <IconButton aria-label="Add to Cart" onClick={handleAddToCart}>
-          <AddShoppingCart />
-        </IconButton>
+        {
+          isEditing
+          ? <div>
+              <IconButton aria-label="Edit" onClick={() => window.open(`https://dashboard.chec.io/products/${product.id}`, "_self")}>
+                <Edit />
+              </IconButton>
+              <IconButton aria-label="Delete" onClick={() => setVisible(true)}>
+                <Delete />
+              </IconButton>
+            </div> 
+          : <IconButton aria-label="Add to Cart" onClick={handleAddToCart}>
+              <AddShoppingCart />
+            </IconButton>
+        }
+        <Dialog
+          open={visible}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"CONFIRMATION"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to delete the item ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => handleDelete(product.id)} color="primary">
+              Confirm
+            </Button>
+            <Button onClick={handleClose} color="primary" autoFocus>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </CardActions>
     </Card>
   );

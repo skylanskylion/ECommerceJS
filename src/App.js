@@ -11,6 +11,7 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
+  const [isEditInv, setIsEditInv] = useState(false);
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -64,6 +65,10 @@ const App = () => {
     }
   };
 
+  const isEditingInv = () => {
+    setIsEditInv(!isEditInv);
+  }; 
+
   useEffect(() => {
     fetchProducts();
     fetchCart();
@@ -75,10 +80,10 @@ const App = () => {
     <Router>
       <div style={{ display: 'flex' }}>
         <CssBaseline />
-        <Navbar totalItems={cart.total_items} handleDrawerToggle={handleDrawerToggle} />
+        <Navbar totalItems={cart.total_items} handleDrawerToggle={handleDrawerToggle} isEditingInvMethod={isEditingInv} isEditing={isEditInv}/>
         <Switch>
           <Route exact path="/">
-            <Products products={products} onAddToCart={handleAddToCart} handleUpdateCartQty />
+            <Products products={products} onAddToCart={handleAddToCart} handleUpdateCartQty isEditing={isEditInv} />
           </Route>
           <Route exact path="/cart">
             <Cart cart={cart} onUpdateCartQty={handleUpdateCartQty} onRemoveFromCart={handleRemoveFromCart} onEmptyCart={handleEmptyCart} />
