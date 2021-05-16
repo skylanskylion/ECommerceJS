@@ -1,29 +1,16 @@
 import React, {useState} from 'react';
 import { Card, CardMedia, CardContent, CardActions, Button, Typography, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import { AddShoppingCart, Delete, Edit } from '@material-ui/icons';
-import axios from 'axios';
 
 import useStyles from './styles';
 
-const Product = ({ product, onAddToCart, isEditing }) => {
+const Product = ({ product, onAddToCart, isEditing, handleDelete }) => {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
   const handleAddToCart = () => onAddToCart(product.id, 1);
 
   const handleClose = () => {
     setVisible(false);
-  };
-
-  const handleDelete = (id) => {
-    axios.delete(`https://api.chec.io/v1/products/${id}`, {
-      headers: {
-        "X-Authorization": `sk_test_26130e814b678a4bcea02925f0c19659e446513f90190`,
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      }
-    })
-    .then((res) => window.location.reload())
-    .catch(err => console.log(err));
   };
 
   return (
@@ -68,7 +55,7 @@ const Product = ({ product, onAddToCart, isEditing }) => {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => handleDelete(product.id)} color="primary">
+            <Button onClick={() => {handleDelete(product.id); handleClose();}} color="primary">
               Confirm
             </Button>
             <Button onClick={handleClose} color="primary" autoFocus>

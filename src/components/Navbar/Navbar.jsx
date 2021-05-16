@@ -3,7 +3,7 @@ import { AppBar, Toolbar, IconButton, Badge, Button, MenuItem, Menu, Typography 
 import { ShoppingCart } from '@material-ui/icons';
 import { Link, useLocation } from 'react-router-dom';
 
-import logo from '../../assets/commerce.png';
+import logo from '../../assets/cart.svg';
 import useStyles from './styles';
 
 const PrimarySearchAppBar = ({ totalItems, isEditingInvMethod, isEditing }) => {
@@ -32,27 +32,33 @@ const PrimarySearchAppBar = ({ totalItems, isEditingInvMethod, isEditing }) => {
 
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar} color="inherit"  style={{backgroundColor: '#7383C8'}}>
+      <AppBar position="fixed" className={classes.appBar} color="inherit"  style={{backgroundColor: '#044D8C'}}>
         <Toolbar>
-          <Typography component={Link} to="/" variant="h6" className={classes.title} color="inherit">
-            <img src={logo} alt="commerce.js" height="25px" className={classes.image} /> Buyer's Paradise
+          <Typography component={Link} to="/" variant="h6" className={classes.title} style={{color: 'whitesmoke'}}>
+            <img src={logo} alt="commerce.js" height="25px" className={classes.image}/> My Digi-Shop
           </Typography>
-          <Button 
-            variant='filled' 
-            onClick={isEditingInvMethod}
-            style={{marginRight: 10, backgroundColor: '#F2CC39'}}
-          >
-            {
-              isEditing ? 'Cancel' : 'Edit Inventory'
-            }
-          </Button>
-          <Button 
-            variant='filled' 
-            onClick={() => window.open('https://dashboard.chec.io/products/add', '_self')}
-            style={{marginRight: 10, backgroundColor: '#F2CC39'}}
-          >
-            Add Item
-          </Button>
+          {
+            location.pathname === '/'
+            ? <>
+                <Button 
+                  variant='contained' 
+                  onClick={isEditingInvMethod}
+                  style={{marginRight: 10, backgroundColor: '#F2CC39'}}
+                >
+                  {
+                    isEditing ? 'Cancel' : 'Edit Inventory'
+                  }
+                </Button>
+                <Button 
+                  variant='contained' 
+                  onClick={() => window.open('https://dashboard.chec.io/products/add', '_self')}
+                  style={{marginRight: 10, backgroundColor: '#F2CC39'}}
+                >
+                  Add Item
+                </Button>
+              </>
+            : null
+          }
           <div className={classes.grow} />
           {location.pathname === '/' && (
           <div className={classes.button}>
