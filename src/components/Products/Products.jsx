@@ -6,13 +6,21 @@ import axios from 'axios';
 
 const Products = ({ products, onAddToCart, isEditing }) => {
   const [items, setItems] = useState([]);
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('date');
+  const [pgRefresh, setPgRefresh] = useState(false);
+  const [viewBy, setViewBy] = useState('row');
   const classes = useStyles();
-  console.log(products);
+  // console.log(products);
+
+  useEffect(() => {
+
+  }, [pgRefresh]);
 
   useEffect(() => {
     setItems(products);
   }, [products, items]);
+
+  const handlePgRefresh = () => setPgRefresh(!pgRefresh);
 
   const handleItemSort = (evt) => {
     setSortBy(evt.target.value);
@@ -20,12 +28,14 @@ const Products = ({ products, onAddToCart, isEditing }) => {
       items.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
     }
     else if(evt.target.value === 'type'){
-      // items.sort((a,b) => (a.created > b.created) ? 1 : ((b.created > a.created) ? -1 : 0));
+      items.sort((a,b) => (a.categories[0].name > b.categories[0].name) ? 1 : ((b.categories[0].name > a.categories[0].name) ? -1 : 0));
     }
     else if(evt.target.value === 'date'){
       items.sort((a,b) => (a.created > b.created) ? 1 : ((b.created > a.created) ? -1 : 0));
     }
   };
+
+  const handleViewBy = (evt) => setViewBy(evt.target.value)
 
   const handleDelete = (id) => {
     axios.delete(`https://api.chec.io/v1/products/${id}`, {
@@ -39,11 +49,13 @@ const Products = ({ products, onAddToCart, isEditing }) => {
       let temp = items;
       for(let [index, value] of temp.entries()){
         if(value.id === id){
+          console.log('deleted', index)
           temp.splice(index, 1);
           break;
         }
       }
       setItems(temp);
+      handlePgRefresh();
     })
     .catch(err => console.log(err));
   };
@@ -62,14 +74,30 @@ const Products = ({ products, onAddToCart, isEditing }) => {
           onChange={handleItemSort}
           style={{minWidth: 100}}
         >
+          <MenuItem value='date'>Date</MenuItem>
           <MenuItem value='name'>Name</MenuItem>
           <MenuItem value='type'>Type</MenuItem>
-          <MenuItem value='date'>Date</MenuItem>
+        </Select>
+        <InputLabel style={{fontSize: 16, fontWeight: 700, marginRight: 8, marginLeft: 15}}>Sort By:</InputLabel>
+        <Select
+          labelId="demo-simple-select-helper-label"
+          id="demo-simple-select-helper"
+          value={viewBy}
+          onChange={handleViewBy}
+          style={{minWidth: 100}}
+        >
+          <MenuItem value='row'>Grid</MenuItem>
+          <MenuItem value='column'>List</MenuItem>
         </Select>
       </div>
-      <Grid container justify="center" spacing={4}>
+      <Grid direction={viewBy} container justify="center" spacing={4} style={{alignItems: 'center'}}>
         {items.map((product) => (
-          <Grid key={product.id} item xs={12} sm={6} md={4} lg={3}>
+          <Grid key={product.id} item xs={12} sm={6} md={4} lg={3} style={viewBy === 'column' ? {marginBottom: 20, width: 500} : null}>
+            {
+              sortBy === 'type'
+              ? <p style={{fontSize: 18, fontWeight: 700}}>{product.categories[0].name}</p>
+              : null
+            }
             <Product product={product} onAddToCart={onAddToCart} isEditing={isEditing} handleDelete={handleDelete}/>
           </Grid>
         ))}
